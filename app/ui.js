@@ -1107,6 +1107,8 @@ const UI = {
         UI.rfb.showOriginCursor = UI.getSetting('show_origin_cursor');
 
         UI.updateViewOnly(); // requires UI.rfb
+
+        UI.updateSyncClipboardContent() // sync_clip_board_content
     },
 
     disconnect() {
@@ -1771,8 +1773,25 @@ const UI = {
         UI.rfb.showOriginCursor = UI.getSetting('show_origin_cursor');
     },
 
+    clipboardReadCallback() {
+        navigator.clipboard.readText()
+            .then(text => {
+                if (UI.getSetting('sync_clip_board_content')) {
+                    UI.rfb.clipboardPasteFrom(text);
+                }
+            })
+            .catch(err => {
+                console.error("无法读取剪贴板内容：", err);
+            });
+    },
+
     updateSyncClipboardContent() {
-        UI.syncClipboardContent = UI.getSetting('sync_clip_board_content')
+        let syncClipboardContent = UI.getSetting('sync_clip_board_content')
+        if (syncClipboardContent) {
+            document.addEventListener('click', UI.clipboardReadCallback);
+        } else {
+            document.removeEventListener('click', UI.clipboardReadCallback)
+        }
     },
 
 
