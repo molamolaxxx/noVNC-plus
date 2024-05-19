@@ -997,6 +997,10 @@ const UI = {
         Log.Debug(">> UI.clipboardReceive: " + e.detail.text.substr(0, 40) + "...");
         document.getElementById('noVNC_clipboard_text').value = e.detail.text;
         if (UI.getSetting("sync_clip_board_content")) {
+            if (!navigator.clipboard) {
+                Log.Info("navigator.clipboard is undefined, please check permission")
+                return
+            }
             navigator.clipboard.writeText(e.detail.text)
                 .then(() => {
                     Log.Debug('Text successfully copied to clipboard');
@@ -1774,6 +1778,10 @@ const UI = {
     },
 
     clipboardReadCallback() {
+        if (!navigator.clipboard) {
+            Log.Info("navigator.clipboard is undefined, please check permission")
+            return
+        }
         navigator.clipboard.readText()
             .then(text => {
                 if (UI.getSetting('sync_clip_board_content')) {
